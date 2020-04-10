@@ -40,7 +40,7 @@ blds_turned_test = boxLabelDatastore(test_data(:,5));
 
 blds_train = boxLabelDatastore(training_data(:,2:5));
 blds_test = boxLabelDatastore(test_data(:,2:5));
-
+%% Combine datastores
 ds_train = combine(imds, blds_train);
 ds_test = combine(imds_test, blds_test);
 ds_sitting = combine(imds, blds_sitting);
@@ -50,6 +50,18 @@ ds_turned = combine(imds, blds_turned);
 %% Set training and test data
 training_data = ds_train;
 test_data = ds_test;
+%% Data augmentation
+augmented_training_data = transform(training_data, @data_augmentation);
+training_data = augmented_training_data;
+%% Data augmentation - show results
+augmented_data = cell(4,1);
+for k = 1:4
+data = read(augmented_training_data);
+augmented_data{k} = insertShape(data{1}, 'Rectangle', data{2});
+reset(augmented_training_data);
+end
+figure
+montage(augmented_data,'BorderSize',10)
 %% Select best number of anchor boxes
 max_num_anchors = 15;
 mean_IoU = zeros([max_num_anchors,1]);
@@ -77,39 +89,43 @@ lgraph = fasterRCNNLayers(input_size, num_classes, anchor_boxes,...
                           feature_extraction_network, feature_layer);
 %% Configure training options
  options = trainingOptions('sgdm', ...
-      'MiniBatchSize', 4, ...
+      'MiniBatchSize', 10, ...
       'InitialLearnRate', 1e-3, ...
       'MaxEpochs', 1, ...
       'VerboseFrequency', 200, ...
       'CheckpointPath', tempdir);
  % 'Plots','training-progress' <- dla kazdej iteracji wyswietla metryki tylko  CPU??? 
-%% Train detector - all classes
- detector = trainFasterRCNNObjectDetector(ds_train, lgraph, options, ...
-        'NegativeOverlapRange',[0 0.3], ...
-        'PositiveOverlapRange',[0.6 1]);
+%% Train or load detector - all classes
+train_flag = 1;
+if train_flag == 1
+    detector = trainFasterRCNNObjectDetector(ds_train, lgraph, options, ...
+                                             'NegativeOverlapRange',[0 0.3], ...
+                                             'PositiveOverlapRange',[0.6 1]);
+else
+    detector=load('detector_0_1.mat');
+    detector=detector.detector;
+end
+
 %% Evaluate detector
-detector=load('detector_0_1.mat');
-detector=detector.detector;
 detection_results = detect(detector, test_data);
 
 [ap, recall, precision] = evaluateDetectionPrecision(detection_results, test_data);
-% recall -ability of the detector to find all relevant objects
-%%
+% recall - ability of the detector to find all relevant objects
+%% Plot evaluation results
 labels = {'sitting'; 'standing'; 'raising_hand'; 'turned'};
 for i=1:4
-    figure
-    plot(recall{i},precision{i})
-    xlabel('Recall')
-    ylabel('Precision')
-    grid on
-    title(sprintf('Average Precision - %s = %.2f', cell2mat(labels(i)), ap(i)))
+    figure; grid on;
+    plot(recall{i}, precision{i}, 'r-o');
+    xlabel('Recall');
+    ylabel('Precision');
+    title(sprintf('Average Precision - %s = %.2f', cell2mat(labels(i)), ap(i)));
 end
 %% Test detector
 img = imread('D:\STUDIA\Magisterka\I ROK\I SEMESTR\ICZ\seria1\resized\0500.jpg');
-%detector=load('detector_0_1.mat');
-detector=detector.detector;
 [bbox, score, label] = detect(detector, img);
 
 detected_img = insertShape(img, 'Rectangle', bbox);
 figure();
 imshow(detected_img);
+%% Save detector
+save('detector_0_3.mat', 'detector')
