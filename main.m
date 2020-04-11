@@ -27,26 +27,26 @@ test_data = dataset(shuffled_indices(test_idx),:);
 
 %% Create image and box label datastore and put them together
 imds = imageDatastore(training_data.filepaths);
-blds_sitting = boxLabelDatastore(training_data(:,2));
-blds_standing = boxLabelDatastore(training_data(:,3));
-blds_raising_hand = boxLabelDatastore(training_data(:,4));
-blds_turned = boxLabelDatastore(training_data(:,5));
+%blds_sitting = boxLabelDatastore(training_data(:,2));
+%blds_standing = boxLabelDatastore(training_data(:,3));
+%blds_raising_hand = boxLabelDatastore(training_data(:,4));
+%blds_turned = boxLabelDatastore(training_data(:,5));
 
 imds_test = imageDatastore(test_data.filepaths);
-blds_sitting_test = boxLabelDatastore(test_data(:,2));
-blds_standing_test = boxLabelDatastore(test_data(:,3));
-blds_raising_hand_test = boxLabelDatastore(test_data(:,4));
-blds_turned_test = boxLabelDatastore(test_data(:,5));
+%blds_sitting_test = boxLabelDatastore(test_data(:,2));
+%blds_standing_test = boxLabelDatastore(test_data(:,3));
+%blds_raising_hand_test = boxLabelDatastore(test_data(:,4));
+%blds_turned_test = boxLabelDatastore(test_data(:,5));
 
 blds_train = boxLabelDatastore(training_data(:,2:5));
 blds_test = boxLabelDatastore(test_data(:,2:5));
 %% Combine datastores
 ds_train = combine(imds, blds_train);
 ds_test = combine(imds_test, blds_test);
-ds_sitting = combine(imds, blds_sitting);
-ds_standing = combine(imds, blds_standing);
-ds_raising_hand = combine(imds, blds_raising_hand);
-ds_turned = combine(imds, blds_turned);
+%ds_sitting = combine(imds, blds_sitting);
+%ds_standing = combine(imds, blds_standing);
+%ds_raising_hand = combine(imds, blds_raising_hand);
+%ds_turned = combine(imds, blds_turned);
 %% Set training and test data
 training_data = ds_train;
 test_data = ds_test;
@@ -89,11 +89,12 @@ lgraph = fasterRCNNLayers(input_size, num_classes, anchor_boxes,...
                           feature_extraction_network, feature_layer);
 %% Configure training options
  options = trainingOptions('sgdm', ...
-      'MiniBatchSize', 10, ...
-      'InitialLearnRate', 1e-3, ...
-      'MaxEpochs', 1, ...
+      'MiniBatchSize', 12, ...
+      'Shuffle', 'every-epoch', ...
+      'InitialLearnRate', 0.003, ...
+      'MaxEpochs', 5, ...
       'VerboseFrequency', 200, ...
-      'CheckpointPath', tempdir);
+      'CheckpointPath', 'D:\STUDIA\Magisterka\I ROK\I SEMESTR\ICZ\projekt\Class_matlab');
  % 'Plots','training-progress' <- dla kazdej iteracji wyswietla metryki tylko  CPU??? 
 %% Train or load detector - all classes
 train_flag = 1;
@@ -102,14 +103,14 @@ if train_flag == 1
                                              'NegativeOverlapRange',[0 0.3], ...
                                              'PositiveOverlapRange',[0.6 1]);
 else
-    detector=load('detector_0_1.mat');
+    detector=load('detector_0_2.mat');
     detector=detector.detector;
 end
 
 %% Evaluate detector
 detection_results = detect(detector, test_data);
 
-[ap, recall, precision] = evaluateDetectionPrecision(detection_results, test_data);
+[average, recall, precision] = evaluateDetectionPrecision(detection_results, test_data);
 % recall - ability of the detector to find all relevant objects
 %% Plot evaluation results
 labels = {'sitting'; 'standing'; 'raising_hand'; 'turned'};
@@ -118,7 +119,7 @@ for i=1:4
     plot(recall{i}, precision{i}, 'r-o');
     xlabel('Recall');
     ylabel('Precision');
-    title(sprintf('Average Precision - %s = %.2f', cell2mat(labels(i)), ap(i)));
+    title(sprintf('Average Precision - %s = %.2f', cell2mat(labels(i)), average(i)));
 end
 %% Test detector
 img = imread('D:\STUDIA\Magisterka\I ROK\I SEMESTR\ICZ\seria1\resized\0500.jpg');
@@ -128,4 +129,4 @@ detected_img = insertShape(img, 'Rectangle', bbox);
 figure();
 imshow(detected_img);
 %% Save detector
-save('detector_0_3.mat', 'detector')
+save('detector_0_4.mat', 'detector')
