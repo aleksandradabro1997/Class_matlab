@@ -47,8 +47,8 @@ test_data = ds_test;
 augmented_training_data = transform(training_data, @data_augmentation);
 training_data = augmented_training_data;
 %% Data augmentation - show results
-augmented_data = cell(5,1);
-for k = 1:5
+augmented_data = cell(4,1);
+for k = 1:4
 data = read(augmented_training_data);
 augmented_data{k} = insertShape(data{1}, 'Rectangle', data{2});
 reset(augmented_training_data);
@@ -72,8 +72,8 @@ xlabel("Number of Anchors");
 title("Number of Anchors vs. Mean IoU");
 % IoU - intersection over unit
 %% Create Faster R-CNN Detection Network
-input_size = [72 128 3];
-%input_size = [224 224 3];
+%input_size = [72 128 3];
+input_size = [224 224 3];
 [max_mean_iou, idx] = max(mean_IoU);
 num_anchors = idx;
 anchor_boxes = estimateAnchorBoxes(training_data, num_anchors);
@@ -86,7 +86,7 @@ lgraph = fasterRCNNLayers(input_size, num_classes, anchor_boxes,...
  options = trainingOptions('sgdm', ...
       'MiniBatchSize', 4, ...
       'InitialLearnRate', 0.002, ...
-      'MaxEpochs', 6, ...
+      'MaxEpochs', 1, ...
       'VerboseFrequency', 100, ...
       'CheckpointPath', 'D:\STUDIA\Magisterka\I ROK\I SEMESTR\ICZ\projekt\Class_matlab');
 %% Train or load detector - all classes
@@ -123,17 +123,24 @@ for i=1:4
 end
 %% Save detector
 save('detector_0_7_input224x224x3.mat', 'detector')
+%% Single test
+img = imread('D:\STUDIA\Magisterka\I ROK\I SEMESTR\ICZ\seria1\resized224x224x3\0760.jpg');
+[bbox, score, label] = detect(detector, img);
+
+detected_img = insertObjectAnnotation(img, 'Rectangle', bbox, label, ...
+                                      'TextBoxOpacity', 0.2, 'FontSize', 8);
+imshow(detected_img);
 %% Test detector
-% path = 'D:\STUDIA\Magisterka\I ROK\I SEMESTR\ICZ\seria1\resized224x224x3';
-% files = dir(path);
-% for i=1:length(files)
-%     if ~(strcmp(files(i).name, '.') || strcmp(files(i).name, '..'))
-%         filename = join([files(i).folder, '\', files(i).name]);
-%         img = imread(filename);
-%         [bbox, score, label] = detect(detector, img);
-% 
-%         detected_img = insertObjectAnnotation(img, 'Rectangle', bbox, label, ...
-%                                       'TextBoxOpacity', 0.2, 'FontSize', 8);
-%         imshow(detected_img);
-%     end    
-% end
+path = 'D:\STUDIA\Magisterka\I ROK\I SEMESTR\ICZ\seria1\resized224x224x3';
+files = dir(path);
+for i=1:length(files)
+    if ~(strcmp(files(i).name, '.') || strcmp(files(i).name, '..'))
+        filename = join([files(i).folder, '\', files(i).name]);
+        img = imread(filename);
+        [bbox, score, label] = detect(detector, img);
+
+        detected_img = insertObjectAnnotation(img, 'Rectangle', bbox, label, ...
+                                      'TextBoxOpacity', 0.2, 'FontSize', 8);
+        imshow(detected_img);
+    end    
+end

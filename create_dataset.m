@@ -64,7 +64,7 @@ raising_hand = raising_hand_all';
 turned = turned_all';
 all_data = table(filepaths, sitting, standing, raising_hand, turned);
 %% Validate bboxes before saving
-[valid, inv_idx] = validate_bboxes(network_input_size, all_data);
+[valid, inv_idx, all_data] = validate_bboxes(network_input_size, all_data);
 if valid == 0
     c = clock;
     year = c(1); month = c(2); day = c(3); hour = c(4); minute = c(5);
