@@ -4,8 +4,8 @@ function [valid, inv_idx] = validate_bboxes(input_size, dataset)
 % 1. input_size - array - size of image
 % 2. dataset - str - dataset path
 %% Load dataset and initialize flag
-dataset = load(dataset);
-dataset = dataset.all_data;
+%dataset = load(dataset);
+%dataset = dataset.all_data;
 valid = 1;
 inv_idx = zeros(1, height(dataset));
 %% Perform check

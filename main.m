@@ -72,8 +72,8 @@ xlabel("Number of Anchors");
 title("Number of Anchors vs. Mean IoU");
 % IoU - intersection over unit
 %% Create Faster R-CNN Detection Network
-%input_size = [72 128 3];
-input_size = [224 224 3];
+input_size = [72 128 3];
+%input_size = [224 224 3];
 [max_mean_iou, idx] = max(mean_IoU);
 num_anchors = idx;
 anchor_boxes = estimateAnchorBoxes(training_data, num_anchors);
@@ -85,8 +85,7 @@ lgraph = fasterRCNNLayers(input_size, num_classes, anchor_boxes,...
 %% Configure training options
  options = trainingOptions('sgdm', ...
       'MiniBatchSize', 4, ...
-      'Shuffle', 'every-epoch', ...
-      'InitialLearnRate', 0.001, ...
+      'InitialLearnRate', 0.002, ...
       'MaxEpochs', 6, ...
       'VerboseFrequency', 100, ...
       'CheckpointPath', 'D:\STUDIA\Magisterka\I ROK\I SEMESTR\ICZ\projekt\Class_matlab');
@@ -95,10 +94,14 @@ train_flag = 0;
 if train_flag == 0
     [detector, training_info] = trainFasterRCNNObjectDetector(training_data,...
                                              lgraph, options, ...
-                                             'NegativeOverlapRange',[0 0.2], ...
-                                             'PositiveOverlapRange',[0.8 1]);
+                                             'NegativeOverlapRange',[0 0.3], ...
+                                             'PositiveOverlapRange',[0.6 1]);
 % NegativeOverlapRange - overlap ratio for negative samples
+%Negative training samples are set equal to the samples that overlap with
+%the ground truth boxes by 0 to 0.3.
 % PositiveOverlapRange - overlap ratio for positive samples
+%Positive training samples are set equal to the samples that overlap with
+%the ground truth boxes by 0.6 to 1.0, measured by the bounding box IoU metric.
 else
     detector=load('detector_0_4.mat');
     detector=detector.detector;
@@ -121,16 +124,16 @@ end
 %% Save detector
 save('detector_0_7_input224x224x3.mat', 'detector')
 %% Test detector
-path = 'D:\STUDIA\Magisterka\I ROK\I SEMESTR\ICZ\seria1\resized224x224x3';
-files = dir(path);
-for i=1:length(files)
-    if ~(strcmp(files(i).name, '.') || strcmp(files(i).name, '..'))
-        filename = join([files(i).folder, '\', files(i).name]);
-        img = imread(filename);
-        [bbox, score, label] = detect(detector, img);
-
-        detected_img = insertObjectAnnotation(img, 'Rectangle', bbox, label, ...
-                                      'TextBoxOpacity', 0.2, 'FontSize', 8);
-        imshow(detected_img);
-    end    
-end
+% path = 'D:\STUDIA\Magisterka\I ROK\I SEMESTR\ICZ\seria1\resized224x224x3';
+% files = dir(path);
+% for i=1:length(files)
+%     if ~(strcmp(files(i).name, '.') || strcmp(files(i).name, '..'))
+%         filename = join([files(i).folder, '\', files(i).name]);
+%         img = imread(filename);
+%         [bbox, score, label] = detect(detector, img);
+% 
+%         detected_img = insertObjectAnnotation(img, 'Rectangle', bbox, label, ...
+%                                       'TextBoxOpacity', 0.2, 'FontSize', 8);
+%         imshow(detected_img);
+%     end    
+% end
