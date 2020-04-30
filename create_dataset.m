@@ -2,12 +2,14 @@ function [all_data] = create_dataset(frame_paths, label_paths,  ...
                                      network_input_size, current_size, ...
                                      varargin)
 % Create dataset from given data
-% Inputs:
+% Inputs
 % 1. frame_paths - cell - paths to folder with images
 % 2. label_paths - cell - paths to folder with labels
 % 3. network_input_size - array - size of network input image
 % 4. current_size - array - size of images in dataset
 % 5. varargin - str - optional - name of dataset
+% Output
+% 1. all_data - table - dataset 
 
  %% Determine if name was given
 if ~isempty(varargin)

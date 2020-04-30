@@ -1,6 +1,11 @@
 function [resized_folder] = resize_images_by_input_size(path, target_size)
 %resize_images_by_input - resize image to target_size
-
+% Inputs
+% 1. path - str - path to folder with images
+% 2. target_size - array - array with output size
+% Outputs
+% 1. resized_folder - str - path to folder with resized images
+%%
 files = dir(path);
 resized_folder = join([path, '\', 'resized', num2str(target_size(1)), ...
                        'x', num2str(target_size(2)), ...

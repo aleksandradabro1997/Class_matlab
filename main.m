@@ -1,8 +1,14 @@
-% Training a Faster R-CNN deep learning object detector
+% CLASS PROJECT - ICK - AGH - EAIIB - AIR ISS - 2020
+% Aleksandra D¹browska
+% Jerzy D¹browski
+% Kinga Talaga
 %% Clear
 clear all; close all; clc
+% Set interpreter of plots for none to be able to use _, / etc
+set('Interpreter', 'none');
 %% Create dataset
-dataset_name = 'dataset_input224x224x3';
+%dataset_name = 'dataset_input224x224x3';
+dataset_name = 'dataset_all.mat';
 %create_dataset({'D:\STUDIA\Magisterka\I ROK\I SEMESTR\ICZ\seria1',...
 %                 'D:\STUDIA\Magisterka\I ROK\I SEMESTR\ICZ\seria2'}, ...
 %                 {'labels_series1.mat', 'labels_series2.mat'}, ...
@@ -11,9 +17,9 @@ dataset_name = 'dataset_input224x224x3';
 %% Load dataset - previously created
 dataset = load(dataset_name);
 % Take dataset out of the structure
-dataset = dataset.all_data;
+dataset = dataset.data3;
 % Resize labels to fit them to images
-%dataset = resize_labels_in_dataset(dataset, 0.1);
+dataset = resize_labels_in_dataset(dataset, 0.1);
 %% Divide dataset into test and training
 rng(0); % set random seed
 shuffled_indices = randperm(height(dataset));
@@ -72,8 +78,8 @@ xlabel("Number of Anchors");
 title("Number of Anchors vs. Mean IoU");
 % IoU - intersection over unit
 %% Create Faster R-CNN Detection Network
-%input_size = [72 128 3];
-input_size = [224 224 3];
+input_size = [72 128 3];
+%input_size = [224 224 3];
 [max_mean_iou, idx] = max(mean_IoU);
 num_anchors = idx;
 anchor_boxes = estimateAnchorBoxes(training_data, num_anchors);
@@ -84,9 +90,9 @@ lgraph = fasterRCNNLayers(input_size, num_classes, anchor_boxes,...
                           feature_extraction_network, feature_layer);
 %% Configure training options
  options = trainingOptions('sgdm', ...
-      'MiniBatchSize', 4, ...
-      'InitialLearnRate', 0.002, ...
-      'MaxEpochs', 1, ...
+      'MiniBatchSize', 8, ...
+      'InitialLearnRate', 0.001, ...
+      'MaxEpochs', 4, ...
       'VerboseFrequency', 100, ...
       'CheckpointPath', 'D:\STUDIA\Magisterka\I ROK\I SEMESTR\ICZ\projekt\Class_matlab');
 %% Train or load detector - all classes
@@ -97,13 +103,13 @@ if train_flag == 0
                                              'NegativeOverlapRange',[0 0.3], ...
                                              'PositiveOverlapRange',[0.6 1]);
 % NegativeOverlapRange - overlap ratio for negative samples
-%Negative training samples are set equal to the samples that overlap with
-%the ground truth boxes by 0 to 0.3.
+% Negative training samples are set equal to the samples that overlap with
+% the ground truth boxes by 0 to 0.3.
 % PositiveOverlapRange - overlap ratio for positive samples
-%Positive training samples are set equal to the samples that overlap with
-%the ground truth boxes by 0.6 to 1.0, measured by the bounding box IoU metric.
+% Positive training samples are set equal to the samples that overlap with
+% the ground truth boxes by 0.6 to 1.0, measured by the bounding box IoU metric.
 else
-    detector=load('detector_0_4.mat');
+    detector=load('detector_0_3__mbatch8_lrate001_overlap0306_input72x128x3.mat');
     detector=detector.detector;
 end
 
@@ -122,25 +128,25 @@ for i=1:4
     title(sprintf('Average Precision - %s = %.2f', cell2mat(labels(i)), average(i)));
 end
 %% Save detector
-save('detector_0_7_input224x224x3.mat', 'detector')
+save('detector_0_3__mbatch8_lrate001_overlap0306_input72x128x3.mat', 'detector');
 %% Single test
-img = imread('D:\STUDIA\Magisterka\I ROK\I SEMESTR\ICZ\seria1\resized224x224x3\0760.jpg');
+img = imread('D:\STUDIA\Magisterka\I ROK\I SEMESTR\ICZ\seria1\resized72x128x3\0359.jpg');
 [bbox, score, label] = detect(detector, img);
 
 detected_img = insertObjectAnnotation(img, 'Rectangle', bbox, label, ...
                                       'TextBoxOpacity', 0.2, 'FontSize', 8);
 imshow(detected_img);
-%% Test detector
-path = 'D:\STUDIA\Magisterka\I ROK\I SEMESTR\ICZ\seria1\resized224x224x3';
-files = dir(path);
-for i=1:length(files)
-    if ~(strcmp(files(i).name, '.') || strcmp(files(i).name, '..'))
-        filename = join([files(i).folder, '\', files(i).name]);
-        img = imread(filename);
-        [bbox, score, label] = detect(detector, img);
-
-        detected_img = insertObjectAnnotation(img, 'Rectangle', bbox, label, ...
-                                      'TextBoxOpacity', 0.2, 'FontSize', 8);
-        imshow(detected_img);
-    end    
-end
+% %% Test detector
+% path = 'D:\STUDIA\Magisterka\I ROK\I SEMESTR\ICZ\seria1\resized224x224x3';
+% files = dir(path);
+% for i=1:length(files)
+%     if ~(strcmp(files(i).name, '.') || strcmp(files(i).name, '..'))
+%         filename = join([files(i).folder, '\', files(i).name]);
+%         img = imread(filename);
+%         [bbox, score, label] = detect(detector, img);
+% 
+%         detected_img = insertObjectAnnotation(img, 'Rectangle', bbox, label, ...
+%                                       'TextBoxOpacity', 0.2, 'FontSize', 8);
+%         imshow(detected_img);
+%     end    
+% end
