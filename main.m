@@ -25,10 +25,19 @@ while from_user
         [average, recall, precision] = evaluate_detector(detector, test_data);
         plot_evaluation_results(recall, precision, average)
     elseif from_user == 2
-        create_dataset({'D:\STUDIA\Magisterka\I ROK\I SEMESTR\ICZ\seria1',...
-                 'D:\STUDIA\Magisterka\I ROK\I SEMESTR\ICZ\seria2'}, ...
-                 {'labels_series1.mat', 'labels_series2.mat'}, ...
-                 [224 224 3], [720 1280 3], 'dataset_input224x224x3');
+        nb = input('WprowadŸ liczbê folderów ze zdjêciami\n');
+        folders = cell(nb, 1);
+        for i=1:nb
+            folders(i) = input('WprowadŸ œcie¿kê do folderu\n');
+        end
+        labels = cell(nb, 1);
+        for i=1:nb
+            labels(i) = input('WprowadŸ œcie¿kê do labellek\n');
+        end
+        desired_size = input('WprowadŸ po¿¹dany rozmiar\n');
+        orginal_size = input('WprowadŸ orginalny rozmiar\n');
+        name = input('WprowadŸ œcie¿kê do zapisu datasetu\n');
+        create_dataset(folders, labels, desired_size, orginal_size, name);
     elseif from_user == 3
         detector_name = input('WprowadŸ œcie¿kê do detektora\n');
         detector=load(detector_name);

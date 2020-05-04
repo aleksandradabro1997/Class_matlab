@@ -1,6 +1,9 @@
 function [nb_of_anchor_boxes] = select_best_nb_of_anchors(max_num_anchors,training_data)
 % select_best_nb_of_anchors - selects best number of anchor boxes according
 % to mean intersection over union
+% Inputs:
+%1. max_num_anchors
+%2. training_data
    %% Select best number of anchor boxes
 
     mean_IoU = zeros([max_num_anchors,1]);
