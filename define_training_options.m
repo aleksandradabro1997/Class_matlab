@@ -3,16 +3,18 @@ function [] = define_training_options(save_path,input_size, feature_extraction_n
                                       verbose_freq, checkpoint_path, negative_overlap, positive_overlap, augmentation)
 %define_training_options - define training options and save them to mat
 % Inputs:
-% 1. save_path - path to save mat
-% 2. feature_extraction_network -
-% 3. feature_layer
-% 4. mini_batch_size
-% 5. learn_rate
-% 6. max_epochs
-% 7. verbose_freq
-% 8. checkpoint_path
-% 9. negative_overlap
-% 10. positive_overlap
+% 1. save_path - str - path to save mat
+% 2. feature_extraction_network - DAG Network - network desired to feature extraction
+% 3. feature_layer - str - layer for feature extraction
+% 4. mini_batch_size - int - number of pictures for mini batch
+% 5. learn_rate - double - required learning rate
+% 6. max_epochs - int - number of training epochs
+% 7. verbose_freq - int - info frequency
+% 8. checkpoint_path - str - path to save checkpoints
+% 9. negative_overlap - array - indicator which bbox overlaps are not
+% treated as correct
+% 10. positive_overlap - array - indicator which bbox overlaps are
+% treated as correct
 %%
 
 save(save_path, 'input_size', 'feature_extraction_network', 'feature_extraction_network_name' ,...

@@ -4,13 +4,16 @@ function [test_data, detector] = run_training(dataset_name, train_size, max_num_
 % 1. dataset_name - str - dataset to load
 % 2. train_size - double - 0-1 
 % 3. training_options - str - path to mat file with training options
+% Outputs:
+% 1. test_data - datastore - test data
+% 2. detector - fasterRCNNObjectDetector - trained detector
 %% Determine training parameters
     load(training_options);
     [detector_name, detector_info] = determine_detector_name(training_options);
 %% Load dataset - previously created
     dataset = load(dataset_name);
     % Take dataset out of the structure
-    dataset = dataset.data3;
+    dataset = dataset.all_data;
     % Resize labels to fit them to images
     dataset = resize_labels_in_dataset(dataset, 0.1);
     %% Divide dataset into test and training

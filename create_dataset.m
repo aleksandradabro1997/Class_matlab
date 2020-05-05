@@ -31,8 +31,8 @@ turned_all = {};
 %% Create table of data
 for i =1:length(frame_paths)
     %% Take data out of the cell
-    frames_path = cell2mat(frame_paths(:,i));
-    labels_path = cell2mat(label_paths(:,i));
+    frames_path = cell2mat(frame_paths{i});
+    labels_path = cell2mat(label_paths{i});
     %% Take labels out of the structure
     labels = load(labels_path);
     %% Resize data if necessary
@@ -74,7 +74,8 @@ if valid == 0
                          mat2str(day), '_', mat2str(hour), '_', ...
                          mat2str(minute), '.mat']);
     save(inv_ind_name, 'inv_idx');
-    error('Bbox validation failed. Invalid bbox indices saved in %s', inv_ind_name);
+    fprintf('Bbox validation failed. Invalid bbox indices saved in %s', inv_ind_name);
+    fprintf('Befor using dataset double check !!!');
 end
 %% Save dataset
 save(dataset_name, 'all_data');

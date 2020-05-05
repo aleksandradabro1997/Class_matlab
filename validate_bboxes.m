@@ -37,7 +37,7 @@ for i=1:height(dataset)
     [wid, len] = size(sitting); 
     if ~isempty(sitting)
         for j=1:wid
-            if (sitting(j,1)+sitting(j,3)) > input_size(1) ||  (sitting(j,2)+sitting(j,4)) > input_size(2)
+            if (sitting(j,1)+sitting(j,3)) > input_size(2) ||  (sitting(j,2)+sitting(j,4)) > input_size(1)
                 fprintf('Found invalid bbox at index %d \n', i);
                 valid = 0;
                 inv_idx(i) = 1;
@@ -48,7 +48,7 @@ for i=1:height(dataset)
     [wid, len] = size(standing); 
     if ~isempty(standing)
         for j=1:wid
-            if (standing(j,1)+standing(j,3)) > input_size(1) ||  (standing(j,2)+standing(j,4)) > input_size(2)
+            if (standing(j,1)+standing(j,3)) > input_size(2) ||  (standing(j,2)+standing(j,4)) > input_size(1)
                 fprintf('Found invalid bbox at index %d \n', i);
                 valid = 0;
                 inv_idx(i) = 1;
@@ -59,7 +59,7 @@ for i=1:height(dataset)
     [wid, len] = size(turned);
     if ~isempty(turned)
         for j=1:wid
-            if (turned(j,1)+turned(j,3)) > input_size(1) ||  (turned(j,2)+turned(j,4)) > input_size(2)
+            if (turned(j,1)+turned(j,3)) > input_size(2) ||  (turned(j,2)+turned(j,4)) > input_size(1)
                 fprintf('Found invalid bbox at index %d \n', i);
                 valid = 0;
                 inv_idx(i) = 1;
@@ -69,7 +69,7 @@ for i=1:height(dataset)
     [wid, len] = size(raising_hand);
     if ~isempty(raising_hand)
         for j=1:wid
-            if (raising_hand(j,1)+raising_hand(j,3)) > input_size(1) ||  (raising_hand(j,2)+raising_hand(j,4)) > input_size(2)
+            if (raising_hand(j,1)+raising_hand(j,3)) > input_size(2) ||  (raising_hand(j,2)+raising_hand(j,4)) > input_size(1)
                 fprintf('Found invalid bbox at index %d \n', i);
                 valid = 0;
                 inv_idx(i) = 1;
