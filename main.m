@@ -49,6 +49,7 @@ while from_user
         run_detector_on_pictures(filepath, detector_name);
     elseif from_user == 4
         save_path = input('WprowadŸ œcie¿kê do zapisu opcji\n');
+        solver = input('WprowadŸ nazwê solvera\n')
         input_size = input('Rozmiar obrazka do sieci\n');
         feature_extraction_network = input('WprowadŸ nazwê sieci ekstraktuj¹cej cechy\n');
         feature_extraction_network_name = input('WprowadŸ nazwê sieci ekstraktuj¹cej cechy - str\n');
@@ -56,16 +57,17 @@ while from_user
         mini_batch_size = input('WprowadŸ mini batch size\n');
         learn_rate = input('WprowadŸ tempo nauki\n');
         max_epochs = input('WprowadŸ maksymaln¹ liczbê epok\n');
-        verbose_freq = input('WprowadŸ czêstoœæ wyœwietlania progresu\n');
+        verbose_freq = input('WprowadŸ czêstoœæ wyœwietlania progresu [iteracje]\n');
         checkpoint_path = input('WprowadŸ œcie¿kê do zapisywania checkpointów \n');
         negative_overlap = input('WprowadŸ zakres negative overlap\n');
         positive_overlap = input('WprowadŸ zakres positive overlap\n');
         augmentation = input('WprowadŸ czy uaktywniæ opcjê augmentacji 0,1\n');
-        define_training_options(save_path,input_size, feature_extraction_network, feature_extraction_network_name,...
+        define_training_options(save_path, solver, input_size, feature_extraction_network, feature_extraction_network_name,...
                                       feature_layer, mini_batch_size , learn_rate, max_epochs, ...
                                       verbose_freq, checkpoint_path, negative_overlap, positive_overlap, augmentation)
+        fprintf('Zapisano\n')
     else
-        
+        fprintf('Niepoprawna opcja\n')
     end
 end
 

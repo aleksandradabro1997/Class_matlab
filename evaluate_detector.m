@@ -8,7 +8,7 @@ function [average, recall, precision] = evaluate_detector(detector, test_data)
 % 2. recall - array - tp/(tp+fn)
 % 3. precision - array - tp/(tp+fp)
 %%
-detection_results = detect(detector, test_data.UnderlyingDatastores{1});
-[average, recall, precision] = evaluateDetectionPrecision(detection_results, test_data.UnderlyingDatastores{2});
+detection_results = detect(detector, test_data);
+[average, recall, precision] = evaluateDetectionPrecision(detection_results, test_data);
 end
 
