@@ -1,5 +1,8 @@
 function [] = resize_images(path, scale)
-% Resize images to expected sizes
+% Inputs
+% 1. path - str - path to folder with images
+% 2. scale - float - scale to resize images
+%% Resize images to expected sizes
 files = dir(path);
 resized_folder = join([path, '\', 'resized']);
 % Check if directory already exist

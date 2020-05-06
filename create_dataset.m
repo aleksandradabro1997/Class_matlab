@@ -2,12 +2,14 @@ function [all_data] = create_dataset(frame_paths, label_paths,  ...
                                      network_input_size, current_size, ...
                                      varargin)
 % Create dataset from given data
-% Inputs:
+% Inputs
 % 1. frame_paths - cell - paths to folder with images
 % 2. label_paths - cell - paths to folder with labels
 % 3. network_input_size - array - size of network input image
 % 4. current_size - array - size of images in dataset
 % 5. varargin - str - optional - name of dataset
+% Output
+% 1. all_data - table - dataset 
 
  %% Determine if name was given
 if ~isempty(varargin)
@@ -29,8 +31,8 @@ turned_all = {};
 %% Create table of data
 for i =1:length(frame_paths)
     %% Take data out of the cell
-    frames_path = cell2mat(frame_paths(:,i));
-    labels_path = cell2mat(label_paths(:,i));
+    frames_path = cell2mat(frame_paths{i});
+    labels_path = cell2mat(label_paths{i});
     %% Take labels out of the structure
     labels = load(labels_path);
     %% Resize data if necessary
@@ -64,7 +66,7 @@ raising_hand = raising_hand_all';
 turned = turned_all';
 all_data = table(filepaths, sitting, standing, raising_hand, turned);
 %% Validate bboxes before saving
-[valid, inv_idx] = validate_bboxes(network_input_size, all_data);
+[valid, inv_idx, all_data] = validate_bboxes(network_input_size, all_data);
 if valid == 0
     c = clock;
     year = c(1); month = c(2); day = c(3); hour = c(4); minute = c(5);
@@ -72,7 +74,8 @@ if valid == 0
                          mat2str(day), '_', mat2str(hour), '_', ...
                          mat2str(minute), '.mat']);
     save(inv_ind_name, 'inv_idx');
-    error('Bbox validation failed. Invalid bbox indices saved in %s', inv_ind_name);
+    fprintf('Bbox validation failed. Invalid bbox indices saved in %s', inv_ind_name);
+    fprintf('Befor using dataset double check !!!');
 end
 %% Save dataset
 save(dataset_name, 'all_data');
